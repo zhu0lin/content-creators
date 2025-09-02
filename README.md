@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# Content Creators App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React frontend application for managing content creators with full CRUD operations, built with Supabase integration.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- ✅ Display content creators with name, URL, description, and optional image
+- ✅ View individual creator details
+- ✅ Add new creators
+- ✅ Edit existing creators
+- ✅ Delete creators
+- ✅ Responsive design with PicoCSS
+- ✅ Supabase database integration
+- ✅ React Router for navigation
 
-### `npm start`
+## Setup Instructions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 1. Install Dependencies
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm install
+```
 
-### `npm test`
+### 2. Configure Supabase
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Go to [Supabase](https://supabase.com) and create a new project
+2. In your Supabase dashboard, go to Settings > API
+3. Copy your Project URL and API Key
+4. Create a `.env` file in the project root with your credentials:
 
-### `npm run build`
+```bash
+# Create .env file
+touch .env
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. Add your Supabase credentials to the `.env` file:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```env
+REACT_APP_SUPABASE_URL=your_supabase_project_url_here
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**⚠️ Important**: Never commit the `.env` file to git! It contains sensitive information.
 
-### `npm run eject`
+### 3. Create Database Table
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+In your Supabase SQL editor, run this query to create the creators table:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```sql
+CREATE TABLE creators (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  url TEXT NOT NULL,
+  description TEXT NOT NULL,
+  imageURL TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+-- Enable Row Level Security (optional but recommended)
+ALTER TABLE creators ENABLE ROW LEVEL SECURITY;
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+-- Create a policy that allows all operations (for development)
+CREATE POLICY "Allow all operations" ON creators FOR ALL USING (true);
+```
 
-## Learn More
+### 4. Seed the Database (Optional)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Start the development server: `npm start`
+2. Navigate to `http://localhost:3000/seed`
+3. Click "Seed Database" to populate with sample creators
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 5. Run the Application
 
-### Code Splitting
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The app will open at `http://localhost:3000`
 
-### Analyzing the Bundle Size
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+src/
+├── components/
+│   ├── CreatorList.js      # Main page showing all creators
+│   ├── CreatorDetail.js    # Individual creator details page
+│   ├── CreatorForm.js      # Form for adding/editing creators
+│   └── SeedDatabase.js     # Database seeding utility
+├── client.js               # Supabase client configuration
+├── seedData.js            # Sample data for seeding
+├── App.js                 # Main app component with routing
+└── index.js               # App entry point
+```
 
-### Making a Progressive Web App
+## API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The app uses Supabase for all database operations:
 
-### Advanced Configuration
+- **GET** `/creators` - Fetch all creators
+- **GET** `/creators/:id` - Fetch single creator
+- **POST** `/creators` - Create new creator
+- **PUT** `/creators/:id` - Update creator
+- **DELETE** `/creators/:id` - Delete creator
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Sample Creators
 
-### Deployment
+The seed data includes popular content creators like:
+- Linus Tech Tips
+- MrBeast
+- Marques Brownlee (MKBHD)
+- PewDiePie
+- Mark Rober
+- Emma Chamberlain
+- David Dobrik
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Technologies Used
 
-### `npm run build` fails to minify
+- React 18
+- React Router DOM
+- Supabase
+- PicoCSS
+- JavaScript (ES6+)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Development
+
+To remove the seeding functionality after setup:
+
+1. Remove the SeedDatabase import and route from `App.js`
+2. Delete `src/components/SeedDatabase.js`
+3. Delete `src/seedData.js`
+
+## License
+
+MIT
